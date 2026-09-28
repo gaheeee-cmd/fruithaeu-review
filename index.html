@@ -1,0 +1,694 @@
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>푸룻해유 확인 요청 목록</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Inter:wght@500;600;700&display=swap">
+<style>
+  :root {
+    --cream: #FAF7EF; --paper: #FFFFFF; --ink: #231F20; --body: #3A342E;
+    --muted: #7B7166; --line: #E3DCCD; --brand: #CE2E22; --yellow: #FDDD04;
+    --farm: #4A773C; --shade: rgba(35,31,32,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cream: #17140F; --paper: #211D17; --ink: #F4EFE4; --body: #D8D0C2;
+      --muted: #9A9081; --line: #353027; --brand: #F0685A; --yellow: #FDDD04;
+      --farm: #86BE73; --shade: rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --cream: #17140F; --paper: #211D17; --ink: #F4EFE4; --body: #D8D0C2;
+    --muted: #9A9081; --line: #353027; --brand: #F0685A; --yellow: #FDDD04;
+    --farm: #86BE73; --shade: rgba(0,0,0,.45);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--cream); color: var(--body);
+    font-family: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+    font-size: 15px; line-height: 1.75; word-break: keep-all; text-wrap: pretty;
+  }
+  .wrap { width: 100%; max-width: 940px; margin: 0 auto; padding-inline: 20px; }
+  h1, h2, h3 { color: var(--ink); margin: 0; text-wrap: balance; }
+  p { margin: 0; }
+  a { color: var(--brand); }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .88em; }
+
+  header { padding-block: 52px 30px; border-bottom: 1px solid var(--line); }
+  header img { height: 44px; width: auto; }
+  .eyebrow {
+    font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--brand);
+  }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; letter-spacing: -.03em; line-height: 1.2; margin-top: 6px; }
+  .lead { margin-top: 16px; max-width: 60ch; }
+  .meta { margin-top: 20px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 22px; }
+
+  .group { padding-block: 40px; border-bottom: 1px solid var(--line); }
+  .group-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 14px; }
+  .group-head h2 { font-size: 1.3rem; font-weight: 900; letter-spacing: -.02em; }
+  .count { font-size: 12px; font-weight: 700; color: var(--muted); font-family: Inter, sans-serif; }
+  .group > p.note { margin-top: 10px; max-width: 62ch; color: var(--muted); font-size: 14px; }
+
+  ol.items { list-style: none; margin: 22px 0 0; padding: 0; display: flex; flex-direction: column; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  ol.items > li { background: var(--paper); padding: 18px 20px; display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 4px 14px; }
+  .num { font-family: Inter, sans-serif; font-size: 12px; font-weight: 700; color: var(--brand); padding-top: 3px; font-variant-numeric: tabular-nums; }
+  .q { color: var(--ink); font-weight: 700; }
+  .why { grid-column: 2; font-size: 13.5px; color: var(--muted); }
+  .why b { color: var(--body); font-weight: 600; }
+  .opts { grid-column: 2; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .opt { border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; font-size: 12.5px; color: var(--ink); background: var(--cream); }
+
+  .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 2px 10px; font-size: 11.5px; font-weight: 700; line-height: 1.9; }
+  .tag.must { background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--brand); }
+  .tag.now  { background: var(--yellow); color: #231F20; }
+  .tag.later{ background: color-mix(in srgb, var(--farm) 16%, transparent); color: var(--farm); }
+
+  .assume { padding-block: 40px 72px; }
+  .assume ul { margin: 18px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .assume li { padding-left: 1.4em; position: relative; }
+  .assume li::before { content: ""; position: absolute; left: 0; top: .78em; width: 14px; height: 2px; border-radius: 2px; background: var(--brand); }
+  .assume b { color: var(--ink); }
+
+  footer { border-top: 1px solid var(--line); padding-block: 22px 56px; font-size: 13px; color: var(--muted); }
+
+
+  /* ── 답변 입력 ── */
+  .answer { grid-column: 2; margin-top: 12px; display: flex; flex-direction: column; gap: 9px; }
+  .choices { display: flex; flex-wrap: wrap; gap: 7px; }
+  .choice { position: relative; }
+  .choice input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .choice span {
+    display: inline-block; border: 1px solid var(--line); border-radius: 999px;
+    padding: 5px 14px; font-size: 13px; color: var(--ink); background: var(--cream);
+    cursor: pointer; transition: border-color .12s, background .12s;
+  }
+  .choice input:hover + span { border-color: var(--brand); }
+  .choice input:focus-visible + span { outline: 2px solid var(--brand); outline-offset: 2px; }
+  .choice input:checked + span { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 700; }
+  textarea.note {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; background: var(--cream);
+    padding: 10px 12px; font: inherit; font-size: 14px; color: var(--ink); resize: vertical;
+  }
+  textarea.note:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+  .saved { font-size: 12px; color: var(--farm); font-weight: 700; }
+  li.done { background: color-mix(in srgb, var(--farm) 5%, var(--paper)); }
+  li.done .num { color: var(--farm); }
+
+  /* ── 하단 고정 바 ── */
+  .bar {
+    position: sticky; bottom: 0; z-index: 20; margin-top: 8px;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(8px); border-top: 1px solid var(--line);
+  }
+  .bar-in { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 12px; }
+  .bar .count-live { font-weight: 700; color: var(--ink); font-size: 14px; }
+  .bar .hint { font-size: 12.5px; color: var(--muted); flex: 1; min-width: 12rem; }
+  .btn {
+    border: 1px solid var(--brand); border-radius: 999px; padding: 8px 18px;
+    font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer;
+    background: var(--brand); color: #fff;
+  }
+  .btn.ghost { background: transparent; color: var(--brand); }
+  .btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  /* ── 페이지 예시 ── */
+  .shots { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 26px 20px; margin-top: 22px; }
+  .shot { display: flex; flex-direction: column; gap: 9px; }
+  .shot-link { text-decoration: none; }
+  .shot-name { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .shot .choices { gap: 6px; }
+  .shot .choice span { padding: 4px 11px; font-size: 12.5px; }
+  textarea.page-note { font-size: 13.5px; }
+  .shot figure { margin: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); }
+  .shot .view { height: 190px; overflow: hidden; }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { font-size: 13px; font-weight: 700; color: var(--ink); }
+  .shot .route { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--muted); font-weight: 500; }
+  .shot-link:hover figure { border-color: var(--brand); }
+  .shot.done .shot-name { color: var(--farm); }
+
+
+  /* ── 화면 크게 보기 ── */
+  button.shot-link {
+    display: block; width: 100%; padding: 0; border: 0; background: none;
+    cursor: zoom-in; font: inherit; text-align: left;
+  }
+  .shot .view { position: relative; }
+  .zoom {
+    position: absolute; right: 8px; bottom: 8px; border-radius: 999px;
+    background: color-mix(in srgb, var(--ink) 78%, transparent); color: #fff;
+    font-size: 11.5px; font-weight: 700; padding: 3px 10px; letter-spacing: .02em;
+  }
+  button.shot-link:focus-visible figure { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+  .viewer {
+    position: fixed; inset: 0; z-index: 50; display: flex; flex-direction: column;
+    background: color-mix(in srgb, var(--ink) 88%, transparent);
+  }
+  /* display:flex 가 hidden 속성을 덮어쓴다 — 닫힌 상태를 직접 못박는다 */
+  .viewer[hidden] { display: none; }
+  .viewer-top {
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    padding: 12px 16px; background: var(--paper); border-bottom: 1px solid var(--line);
+  }
+  .viewer-title { font-weight: 900; color: var(--ink); font-size: 15px; }
+  /* align-items 기본값(stretch)이면 긴 스크린샷이 세로로 눌린다 — flex-start 로 원비율 유지 */
+  .viewer-body { flex: 1; overflow: auto; padding: 16px; display: flex; justify-content: center; align-items: flex-start; }
+  .viewer-body img {
+    display: block; width: 100%; max-width: 900px; height: auto; flex: 0 0 auto;
+    border-radius: 10px; background: var(--paper);
+  }
+  body.locked { overflow: hidden; }
+
+  @media (max-width: 600px) {
+    ol.items > li { grid-template-columns: 1.4rem minmax(0, 1fr); padding: 16px; }
+  }
+</style>
+
+<header class="wrap">
+  <img src="logo-fruithaeu.svg" alt="FRUiT HAEU">
+  <p class="eyebrow" style="margin-top:18px;">확인 요청</p>
+  <h1>홈페이지 작업, 확인이 필요한 것들</h1>
+  <p class="lead">
+    지금까지 작업하면서 <strong>저희가 임의로 정하면 안 되는 것</strong>과 <strong>자료가 없어 비워 둔 자리</strong>를 모았습니다.
+    답을 주시는 대로 바로 반영됩니다. 전부 한 번에 주실 필요는 없고, 정해지는 것부터 알려주세요.
+    <strong>각 항목 아래에 바로 답을 적으실 수 있습니다</strong> — 적은 내용은 이 브라우저에 자동 저장되고,
+    맨 아래 <strong>답변 복사</strong> 버튼으로 한 번에 복사해 보내주시면 됩니다.
+    화면을 보고 고치고 싶은 곳은 <a href="#screens">화면별 의견</a>에, 그 밖의 이야기는 <a href="#extra">기타 주요 의견</a>에 적어주세요.
+  </p>
+  <div class="meta">
+    <span>2026-09-28 기준</span>
+    <span><span class="tag must">공개 전 필수</span> 없으면 사이트를 열 수 없습니다</span>
+    <span><span class="tag now">지금 화면에 보임</span> 임시 문구가 그대로 노출 중</span>
+    <span><span class="tag later">여유 있음</span></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="group">
+    <div class="group-head">
+      <h2>1. 결정만 해주시면 되는 것</h2>
+      <span class="count">5건 · 자료 필요 없음</span>
+    </div>
+    <p class="note">고르기만 하시면 됩니다. 사실 관계를 담은 문장이거나 화면 구조가 바뀌는 것이라 저희가 정하지 않았습니다.</p>
+
+    <ol class="items">
+      <li>
+        <span class="num">01</span>
+        <p class="q">딸기 판매 중량은 어느 쪽이 맞습니까? <span class="tag now">지금 화면에 보임</span></p>
+        <p class="why">자료마다 다릅니다 — <b>콘텐츠 브리프 SHOP 장에는 400g / 800g / 1.6kg</b> 으로 적혀 있고, <b>B2B 규격표에는 400g / 800g / 1kg</b> 입니다. 우선 브리프 값(1.6kg)으로 화면을 만들어 두었으니 맞는지 확인만 해주시면 됩니다.</p>
+        
+      <div class="answer" data-qid="q01" data-q="딸기 판매 중량은 어느 쪽이 맞습니까? 지금 화면에 보임"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q01" value="400g / 800g / 1.6kg"><span>400g / 800g / 1.6kg</span></label><label class="choice"><input type="radio" name="q01" value="400g / 800g / 1kg"><span>400g / 800g / 1kg</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      
+      <li>
+        <span class="num">02</span>
+        <p class="q">농장주 인터뷰에 <b>인물 사진</b>을 쓸까요? 쓴다면 <b>촬영 계획이 있으십니까?</b></p>
+        <p class="why">브리프에 "농장주 사진 + 인터뷰 글"이 있습니다. 지금 받은 자료에는 농장주 사진이 없어서, <b>기존에 갖고 계신 사진이 있는지 / 10월 말 촬영 때 같이 찍으실 계획인지</b> 알려주시면 그에 맞춰 자리를 잡겠습니다. 사진을 안 쓰기로 하시면 인용문과 농장 전경으로 대신할 수 있습니다.</p>
+        
+      <div class="answer" data-qid="q03" data-q="농장주 인터뷰에 인물 사진을 쓸까요?"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q03" value="기존 사진 있음 (전달 예정)"><span>기존 사진 있음</span></label><label class="choice"><input type="radio" name="q03" value="촬영 예정 (10월 말)"><span>촬영 예정</span></label><label class="choice"><input type="radio" name="q03" value="인물 사진 안 씀 — 인용문 + 농장 사진"><span>인물 사진 안 씀</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      
+      <li>
+        <span class="num">03</span>
+        <p class="q">소식 한 건에 사진을 <b>여러 장</b> 넣어야 합니까?</p>
+        <p class="why">지금은 소식 한 건에 대표 사진 한 장이 들어갑니다. 행사·박람회처럼 사진이 여러 장인 소식을 자주 올리실 거라면 넘겨 보는 형태를 미리 만들어 두는 편이 낫습니다. 한 장으로 충분하면 그대로 둡니다.</p>
+        
+      <div class="answer" data-qid="q05" data-q="인스타 게시물이 주로 여러 장(캐러셀)입니까?"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q05" value="한 장이면 충분"><span>한 장이면 충분</span></label><label class="choice"><input type="radio" name="q05" value="여러 장 넘겨보기 필요"><span>여러 장 필요</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li>
+        <span class="num">04</span>
+        <p class="q">비전 마지막 문장의 주어가 <b>미프레쉬</b>인데, 그대로 둘까요?</p>
+        <p class="why">원고에 "…<b>미프레쉬가 그리는 미래입니다</b>" 로 되어 있습니다. About 페이지는 푸룻해유 브랜드를 주어로 쓰고 있어서 이 문장만 법인 이름으로 끝납니다. 비전을 법인이 그리는 것으로 보면 그대로 두어도 맞습니다.</p>
+        
+      <div class="answer" data-qid="q06" data-q="비전 마지막 문장의 주어가 미프레쉬인데, 그대로 둘까요?"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q06" value="그대로 (미프레쉬)"><span>그대로 (미프레쉬)</span></label><label class="choice"><input type="radio" name="q06" value="푸룻해유로 바꾸기"><span>푸룻해유로 바꾸기</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      
+      <li>
+        <span class="num">05</span>
+        <p class="q">품목별로 <b>직영 / 협력 / 산지 소싱</b>을 정확히 적어주세요 <span class="tag now">지금 화면에 보임</span></p>
+        <p class="why">자료마다 달라서 저희가 브리프 04장 기준으로 채워 두었는데, <b>사이트에 "직영농장"이라고 적히는 건 바이어가 산지 실사로 확인하는 사실</b>이라 정확히 맞춰야 합니다. 아래가 지금 반영된 상태입니다 — 틀린 것만 고쳐 적어주셔도 됩니다.</p>
+        <p class="why"><b>직영</b>: 딸기(논산) · 샤인머스켓/거봉/캠벨 포도(영동) · 블루베리(논산) · 대추방울토마토(논산·부여)<br>
+        <b>협력·산지 소싱</b>: 복숭아 · 자두 · 수박</p>
+        <p class="why">농장이 있는 <b>지역</b>도 같이 적어주시면 농장 소개에 그대로 들어갑니다. 지금 사이트는 논산·영동만 이야기하고 있습니다.</p>
+      <div class="answer" data-qid="q08" data-q="품목별로 직영 / 협력 / 산지 소싱을 정확히 적어주세요"><textarea class="note" rows="5" placeholder="예) 딸기 — 직영, 논산 / 샤인머스켓 — 직영, 영동 / 복숭아 — 협력, 경산 …"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      
+    </ol>
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>2. 공개 전에 꼭 받아야 하는 정보</h2>
+      <span class="count">4건</span>
+    </div>
+    <p class="note">법적으로 표기해야 하는 항목입니다. 지금은 해당 줄이 화면에서 통째로 빠진 채로 나갑니다.</p>
+
+    <ol class="items">
+      <li><span class="num">06</span><p class="q">사업자등록번호 <span class="tag must">공개 전 필수</span></p><p class="why">푸터와 개인정보처리방침에 들어갑니다.</p><div class="answer" data-qid="q10" data-q="사업자등록번호 공개 전 필수"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">07</span><p class="q">통신판매업 신고번호 <span class="tag must">공개 전 필수</span></p><p class="why">상품을 소개하는 사이트라 필요합니다.</p><div class="answer" data-qid="q11" data-q="통신판매업 신고번호 공개 전 필수"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">08</span><p class="q">대표자명 <span class="tag must">공개 전 필수</span></p><div class="answer" data-qid="q12" data-q="대표자명 공개 전 필수"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">09</span><p class="q">개인정보 보호책임자 이름·직책, 방침 시행일 <span class="tag must">공개 전 필수</span></p><p class="why">개인정보처리방침에 들어갑니다. 문의 폼으로 개인정보를 받기 때문에 필요합니다.</p><div class="answer" data-qid="q13" data-q="개인정보 보호책임자 이름·직책, 방침 시행일 공개 전 필수"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+    </ol>
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>3. 지금 화면에 임시 문구가 보이는 곳</h2>
+      <span class="count">3건</span>
+    </div>
+    <p class="note">사이트를 열어보시면 바로 눈에 띄는 자리입니다. 우선순위가 가장 높습니다.</p>
+
+    <ol class="items">
+      <li>
+        <span class="num">10</span>
+        <p class="q">협력 농장 5곳 · 협력 업체 2곳의 실제 정보 <span class="tag now">지금 화면에 보임</span></p>
+        <p class="why">지금 <b>"협력농장 A · B · C · D · E"</b> 로 그대로 나옵니다. 농장 이름 · 지역 · 취급 품목을 주세요. <b>업체명을 공개해도 되는지</b>도 함께 확인 부탁드립니다.</p>
+      <div class="answer" data-qid="q14" data-q="협력 농장 5곳 · 협력 업체 2곳의 실제 정보 지금 화면에 보임"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q14" value="일곱 개 모두 등록됨 (주소 전달)"><span>모두 등록됨</span></label><label class="choice"><input type="radio" name="q14" value="일부만 등록됨"><span>일부만 등록됨</span></label><label class="choice"><input type="radio" name="q14" value="아직 등록 전 — 예정일 메모"><span>아직 등록 전</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li>
+        <span class="num">11</span>
+        <p class="q">상품별 스마트스토어 주소 7개 <span class="tag now">지금 화면에 보임</span></p>
+        <p class="why">지금은 구매 버튼이 전부 <b>스토어 첫 화면</b>으로 갑니다. 고객이 상품을 다시 찾아야 해서 구매가 많이 샙니다. 스토어에서 상품을 열고 주소창을 복사해 주시면 됩니다.</p>
+        <p class="why">필요한 상품은 일곱 개입니다 — 거봉 · 샤인머스켓 · 캠벨포도 · 대추방울토마토 · 복숭아 · 자두 · 블루베리</p>
+        <p class="why"><b>새 스토어(fruithaeu)에 일곱 개가 이미 다 올라가 있습니까?</b> 아직이라면 <b>언제쯤 올리실 예정인지</b> 알려주세요. 올라가는 시점에 맞춰 링크를 넣겠습니다. 일부만 올라가 있다면 올라간 것부터 주셔도 됩니다.</p>
+      <div class="answer" data-qid="q15" data-q="상품별 스마트스토어 주소 7개 지금 화면에 보임"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li>
+        <span class="num">12</span>
+        <p class="q">소식 4건의 본문 원고 <span class="tag now">지금 화면에 보임</span></p>
+        <p class="why">제목만 있고 본문이 비어 있습니다 — 논산시 업무협약 / Driscoll's 수출 논의 / 2026 농업 박람회 / 논산 딸기축제.</p>
+      <div class="answer" data-qid="q16" data-q="소식 4건의 본문 원고 지금 화면에 보임"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+    </ol>
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>4. 품목 정보</h2>
+      <span class="count">4건</span>
+    </div>
+    <p class="note">B2B 바이어가 가장 많이 보는 자리입니다. 지금은 자료가 있는 품목만 표에 올라가 있습니다.</p>
+
+    <ol class="items">
+      <li><span class="num">13</span><p class="q">블루베리 · 배 · 감의 규격</p><p class="why">중량, 입수/크기, 당도, 시즌, 원산지, 품종. 자료가 없어 제철 규격표에서 빠져 있습니다.</p><div class="answer" data-qid="q17" data-q="블루베리 · 배 · 감의 규격"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">14</span><p class="q">제철 캘린더의 실제 공급 월</p><p class="why">지금 값은 저희가 일반적인 시기로 채워둔 것입니다. 실제 출하 월로 확인 부탁드립니다.</p><div class="answer" data-qid="q18" data-q="제철 캘린더의 실제 공급 월"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">15</span><p class="q">상품별 실제 중량과 소비기한</p><p class="why">스마트스토어에 올리신 값과 맞춰야 합니다.</p><div class="answer" data-qid="q19" data-q="상품별 실제 중량과 소비기한"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">16</span><p class="q">B2B 포장 규격과 출고·배송 안내 원고</p><p class="why">소매 / 도매 / 수출 각각의 박스 규격과 입수. 지금은 예시 값이 들어가 있습니다.</p><div class="answer" data-qid="q20" data-q="B2B 포장 규격과 출고·배송 안내 원고"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+    </ol>
+  </section>
+
+  <section class="group">
+    <div class="group-head">
+      <h2>5. 사진과 영상</h2>
+      <span class="count">6건</span>
+    </div>
+    <p class="note"><b>새로 찍기 전에, 이미 갖고 계신 사진부터 확인해주세요.</b> 스마트스토어 상세페이지, 인스타그램, 예전 촬영본, 박람회·행사 사진 등 어디에 있든 보내주시면 됩니다. 화질이 낮거나 정리가 안 돼 있어도 괜찮습니다 — 쓸 수 있는지는 저희가 보고 판단하겠습니다. 없는 사진을 지어내지는 않고, 빈자리는 과일 일러스트로 메우고 있습니다. <b>10월 촬영 때 같이 찍으실 것은 "촬영 예정" 이라고만 적어주시면 됩니다</b> — 저희가 그 자리를 비워두고 기다리겠습니다.</p>
+
+    <ol class="items">
+      <li><span class="num">17</span><p class="q">딸기 사진 — <b>지금 갖고 계신 게 있습니까?</b> <span class="tag now">지금 화면에 보임</span></p><p class="why">받은 자료에 딸기 사진이 <b>한 장도 없습니다</b>. 품목 폴더가 방울토마토·복숭아·블루베리·자두·포도뿐입니다. 주력 품목인데 홈·소개·상품 어디에도 못 쓰고 있어서, 지금은 다른 과일 사진이 그 자리를 대신하고 있습니다.</p><p class="why">10월 말 촬영 예정으로 알고 있는데, <b>그 전에 쓸 수 있는 사진이 있으면 먼저 주세요.</b> 농장 전경, 수확 장면, 패키지, 스토어에 올리셨던 컷 무엇이든 좋습니다. 한 장만 있어도 화면이 많이 달라집니다.</p><div class="answer" data-qid="q21" data-q="딸기 사진"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">18</span><p class="q">딸기 직영농장 영상 11컷 (From Farm to Fruit)</p><p class="why">브리프의 구성안대로 자리는 잡아 뒀습니다. 파일을 주시면 그 자리에 바로 붙습니다.</p><div class="answer" data-qid="q22" data-q="딸기 직영농장 영상 11컷 (From Farm to Fruit)"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">19</span><p class="q">딸기 상품 사진</p><p class="why">지금 스토어에 올라간 7품목(거봉·샤인머스켓·캠벨·방울토마토·복숭아·자두·블루베리)은 사진이 모두 있습니다. <b>딸기만 상품도 사진도 없습니다</b> — 주력 품목인데 상품 목록에서 빠져 있습니다.</p><div class="answer" data-qid="q23" data-q="딸기 상품 사진"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">20</span><p class="q">농장주 사진과 인터뷰 원고</p><p class="why">1번 묶음 03번에서 "인물 사진 사용"으로 정하실 경우에만 필요합니다.</p><div class="answer" data-qid="q24" data-q="농장주 사진과 인터뷰 원고"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">21</span><p class="q">홈 첫 화면 배경 영상 <span class="tag later">여유 있음</span></p><p class="why">15~30초 무음 루프. 지금은 사진이 돌아갑니다. 없어도 무방합니다.</p><div class="answer" data-qid="q25" data-q="홈 첫 화면 배경 영상 여유 있음"><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div></li>
+      <li><span class="num">22</span>
+        <p class="q">과일 일러스트 원본 파일이 있습니까?</p>
+        <p class="why">한글·영문 이름이 함께 들어간 과일 일러스트 세트(방울토마토·블루베리·딸기·포도·복숭아·수박)를 보여주신 적이 있는데, <b>저희가 받은 디자인 자료에는 그 파일이 없습니다.</b> 원본을 주시면 사이트 전체 과일 그림을 그걸로 바꿀 수 있습니다. 지금은 BI 아이콘을 쓰고 있습니다.</p>
+        <div class="answer" data-qid="q27" data-q="과일 일러스트 원본 파일이 있습니까?"><div class="choices" role="group" aria-label="선택"><label class="choice"><input type="radio" name="q27" value="있습니다 (파일 전달)"><span>있습니다</span></label><label class="choice"><input type="radio" name="q27" value="없습니다 — 지금 아이콘 유지"><span>없습니다</span></label></div><textarea class="note" rows="2" placeholder="답변 또는 메모를 적어주세요"></textarea><p class="saved" hidden>저장됨</p></div>
+      </li>
+      
+    </ol>
+  </section>
+
+  <section class="group" id="screens">
+    <div class="group-head">
+      <h2>화면별 의견</h2>
+      <span class="count">지금 만들어진 화면 8개</span>
+    </div>
+    <p class="note">지금까지 만든 화면입니다. 썸네일을 누르면 이 페이지 안에서 크게 열립니다.
+      고치고 싶은 곳이 있으면 화면 아래 칸에 적어주세요 — 위 항목 답변과 함께 복사됩니다.</p>
+    <div class="shots">
+      <div class="shot" data-page="home" data-label="HOME">
+        <button type="button" class="shot-link" data-src="home.webp" data-title="HOME 화면"><figure><div class="view"><img src="home.webp" alt="HOME 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">HOME <span class="route">/</span></p>
+        <div class="choices" role="group" aria-label="HOME 의견">
+          <label class="choice"><input type="radio" name="p_home" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_home" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="farms" data-label="OUR FARMS">
+        <button type="button" class="shot-link" data-src="farms.webp" data-title="OUR FARMS 화면"><figure><div class="view"><img src="farms.webp" alt="OUR FARMS 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">OUR FARMS <span class="route">/farms</span></p>
+        <div class="choices" role="group" aria-label="OUR FARMS 의견">
+          <label class="choice"><input type="radio" name="p_farms" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_farms" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="about" data-label="ABOUT FRUiTHAEU">
+        <button type="button" class="shot-link" data-src="about.webp" data-title="ABOUT FRUiTHAEU 화면"><figure><div class="view"><img src="about.webp" alt="ABOUT FRUiTHAEU 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">ABOUT FRUiTHAEU <span class="route">/about</span></p>
+        <div class="choices" role="group" aria-label="ABOUT FRUiTHAEU 의견">
+          <label class="choice"><input type="radio" name="p_about" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_about" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="season" data-label="SEASONAL FRUITS">
+        <button type="button" class="shot-link" data-src="season.webp" data-title="SEASONAL FRUITS 화면"><figure><div class="view"><img src="season.webp" alt="SEASONAL FRUITS 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">SEASONAL FRUITS <span class="route">/season</span></p>
+        <div class="choices" role="group" aria-label="SEASONAL FRUITS 의견">
+          <label class="choice"><input type="radio" name="p_season" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_season" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="shop" data-label="SHOP FRUiTHAEU">
+        <button type="button" class="shot-link" data-src="shop.webp" data-title="SHOP FRUiTHAEU 화면"><figure><div class="view"><img src="shop.webp" alt="SHOP FRUiTHAEU 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">SHOP FRUiTHAEU <span class="route">/shop</span></p>
+        <div class="choices" role="group" aria-label="SHOP FRUiTHAEU 의견">
+          <label class="choice"><input type="radio" name="p_shop" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_shop" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="news" data-label="NEWS">
+        <button type="button" class="shot-link" data-src="news.webp" data-title="NEWS 화면"><figure><div class="view"><img src="news.webp" alt="NEWS 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">NEWS <span class="route">/news</span></p>
+        <div class="choices" role="group" aria-label="NEWS 의견">
+          <label class="choice"><input type="radio" name="p_news" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_news" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="contact" data-label="CONTACT">
+        <button type="button" class="shot-link" data-src="contact.webp" data-title="CONTACT 화면"><figure><div class="view"><img src="contact.webp" alt="CONTACT 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">CONTACT <span class="route">/contact</span></p>
+        <div class="choices" role="group" aria-label="CONTACT 의견">
+          <label class="choice"><input type="radio" name="p_contact" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_contact" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+      <div class="shot" data-page="en" data-label="영어 사이트">
+        <button type="button" class="shot-link" data-src="en.webp" data-title="영어 사이트 화면"><figure><div class="view"><img src="en.webp" alt="영어 사이트 화면" loading="lazy"><span class="zoom">크게 보기</span></div></figure></button>
+        <p class="shot-name">영어 사이트 <span class="route">/en</span></p>
+        <div class="choices" role="group" aria-label="영어 사이트 의견">
+          <label class="choice"><input type="radio" name="p_en" value="이대로 좋습니다"><span>이대로 좋아요</span></label>
+          <label class="choice"><input type="radio" name="p_en" value="수정 필요"><span>수정 필요</span></label>
+        </div>
+        <textarea class="note page-note" rows="3" placeholder="이 화면에 대한 의견을 적어주세요"></textarea>
+        <p class="saved" hidden>저장됨</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="group" id="extra">
+    <div class="group-head">
+      <h2>기타 주요 의견</h2>
+      <span class="count">자유롭게</span>
+    </div>
+    <p class="note">위 항목에 없는 이야기를 여기에 적어주세요. 전체적인 인상, 빠진 내용, 일정, 예산, 무엇이든 좋습니다.
+      적으신 내용은 답변과 함께 복사됩니다.</p>
+    <div class="answer" id="extra-box" style="grid-column:auto;margin-top:22px;">
+      <textarea class="note" id="extra-note" rows="7" placeholder="예) 전체적으로 색이 강한 느낌입니다. 그리고 수출 관련 내용이 더 들어갔으면 합니다."></textarea>
+      <p class="saved" id="extra-saved" hidden>저장됨</p>
+    </div>
+  </section>
+
+  <section class="assume wrap" style="padding-inline:0;">
+    <p class="eyebrow">참고</p>
+    <h2 style="font-size:1.3rem;font-weight:900;margin-top:6px;">이렇게 알고 진행하고 있습니다</h2>
+    <p class="note" style="margin-top:10px;color:var(--muted);font-size:14px;max-width:62ch;">아래는 이미 확인받았거나 저희가 판단해 정한 것입니다. 다르면 알려주세요.</p>
+    <ul>
+      <li><b>직영 품목</b> — 딸기(논산) · 포도 캠벨/샤인머스켓/거봉(영동) · 블루베리(논산) · 대추방울토마토. 나머지는 협력·산지 소싱</li>
+      <li><b>주색을 레드로</b> — 딸기가 주 종목이라 초록 색면을 줄이고 <b>레드를 주색면</b>으로 올렸습니다. 초록은 농장·생산 이야기(품질관리, 도·소매 납품)에만 남겼습니다</li>
+      <li><b>홈 구성 정리</b> — 브리프대로 "생산부터 유통까지" 배너를 절반으로 줄이고 그 옆에 <b>Our product(딸기 패키지 + 중량 + Shop now)</b>를 넣었습니다. 홈에 두 번 나오던 제철 블록(이번 달 품목·캘린더 요약)은 걷어냈고, 전체 캘린더는 SEASONAL FRUITS 에 그대로 있습니다</li>
+      <li><b>이벤트 페이지</b> — 원고가 없고 당장 쓸 계획이 없어 뺐습니다. 필요해지면 다시 넣습니다</li>
+      <li><b>과일 아이콘</b> — BI 에 없는 과일(복숭아·수박·블루베리·배·감)은 같은 어법으로 저희가 그려 넣었습니다. 디자이너 확정본이 나오면 파일만 바꾸면 됩니다</li>
+      <li><b>제철 캘린더 수정</b> — 품목과 공급 월이 바뀌면 <b>알려주시는 대로 저희가 반영</b>합니다. 관리자 화면에서 직접 고치는 기능도 들어가 있어, 나중에 필요하시면 계정을 드리고 안내해 드리겠습니다</li>
+      <li><b>소식(NEWS) 운영</b> — 관리자 화면에서 <b>직접 등록</b>하는 방식으로 진행합니다. 인스타 자동 연동은 계정 조건(프로 계정)과 60일마다 접속 권한 갱신이 필요해, 인스타 운영이 자리잡은 뒤 다시 검토하기로 했습니다</li>
+      <li><b>검색·공유 이름</b> — 확정 주신 대로 탭 제목과 링크 공유가 <b>FRUiTHAEU 푸룻해유</b>로 나갑니다 (반영 완료)</li>
+      <li><b>스마트스토어</b> — <code>smartstore.naver.com/fruithaeu</code>. 결제는 사이트에서 받지 않고 스토어로 보냅니다</li>
+      <li><b>메뉴 7개</b> — HOME / OUR FARMS / ABOUT FRUiTHAEU / SEASONAL FRUITS / SHOP FRUiTHAEU / NEWS / CONTACT</li>
+      <li><b>표기</b> — 영문 FRUiTHAEU, 국문 푸룻해유. 소비자가 보는 자리는 푸룻해유, MEFRESH 는 생산·법인 설명에만</li>
+      <li><b>국문 서체</b> — BI 지정 2종 중 <b>카페24 아네모네</b>만 웹에 씁니다. 마포 홍대프리덤은 웹폰트 배포 조건 해석이 갈려 제외했고, 필요하면 글자를 이미지로 떠서 씁니다</li>
+      <li><b>ABOUT 원고</b> — 브랜드 소개 원고가 따로 없다고 확인되어, 기존 회사 소개 원고를 푸룻해유 중심으로 재구성해 쓰고 있습니다</li>
+    </ul>
+  </section>
+</main>
+
+
+
+<div class="viewer" id="viewer" hidden>
+  <div class="viewer-top">
+    <p class="viewer-title" id="viewer-title"></p>
+    <button type="button" class="btn ghost viewer-close" id="viewer-close">닫기</button>
+  </div>
+  <div class="viewer-body" id="viewer-body">
+    <img id="viewer-img" alt="">
+  </div>
+</div>
+
+<div class="bar">
+  <div class="wrap bar-in">
+    <span class="count-live" id="progress">답변 0 / 26</span>
+    <span class="hint">적으신 내용은 이 브라우저에 자동 저장됩니다.</span>
+    <button type="button" class="btn" id="copy">답변 복사</button>
+    <button type="button" class="btn ghost" id="reset">지우기</button>
+  </div>
+</div>
+
+<script>
+  (function () {
+    /* 저장 칸 이름을 바꾸면 이전에 적힌 내용(테스트 답변)은 무시되고 빈 상태로 시작한다 */
+    var KEY = "fruithaeu-ask-v2";
+    var store = {};
+    try { store = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) { store = {}; }
+
+    /* [data-qid] 로 걸러야 한다 — 기타 의견 칸도 .answer 를 쓰지만 질문이 아니다 */
+    var blocks = Array.prototype.slice.call(document.querySelectorAll(".answer[data-qid]"));
+    var shots = Array.prototype.slice.call(document.querySelectorAll(".shot"));
+
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) { /* 저장 불가 브라우저 */ }
+      progress();
+    }
+
+    function progress() {
+      var done = 0;
+      blocks.forEach(function (b) {
+        var a = store[b.dataset.qid] || {};
+        var filled = Boolean((a.choice && a.choice.length) || (a.note && a.note.trim().length));
+        b.closest("li").classList.toggle("done", filled);
+        if (filled) done++;
+      });
+      var screens = 0;
+      shots.forEach(function (shot) {
+        var a = store["page:" + shot.dataset.page] || {};
+        var filled = Boolean((a.choice && a.choice.length) || (a.note && a.note.trim().length));
+        shot.classList.toggle("done", filled);
+        if (filled) screens++;
+      });
+      var el = document.getElementById("progress");
+      if (el) el.textContent = "답변 " + done + " / " + blocks.length + " · 화면 의견 " + screens + " / " + shots.length;
+    }
+
+    /* 화면별 의견 — 질문과 같은 저장소를 쓰고 키만 page: 로 구분한다 */
+    shots.forEach(function (shot) {
+      var key = "page:" + shot.dataset.page;
+      var saved = store[key] || {};
+      var note = shot.querySelector("textarea");
+      var radios = Array.prototype.slice.call(shot.querySelectorAll("input[type=radio]"));
+      var flag = shot.querySelector(".saved");
+      var timer, typing;
+
+      if (saved.note && note) note.value = saved.note;
+      radios.forEach(function (r) { if (r.value === saved.choice) r.checked = true; });
+
+      function mark() {
+        if (!flag) return;
+        flag.hidden = false;
+        clearTimeout(timer);
+        timer = setTimeout(function () { flag.hidden = true; }, 1400);
+      }
+      function put(patch) {
+        store[key] = Object.assign({}, store[key], patch, { label: shot.dataset.label });
+        save(); mark();
+      }
+      radios.forEach(function (r) {
+        r.addEventListener("change", function () { put({ choice: r.value }); });
+      });
+      if (note) {
+        note.addEventListener("input", function () {
+          clearTimeout(typing);
+          typing = setTimeout(function () { put({ note: note.value }); }, 400);
+        });
+      }
+    });
+
+    blocks.forEach(function (b) {
+      var qid = b.dataset.qid;
+      var saved = store[qid] || {};
+      var note = b.querySelector("textarea");
+      var radios = Array.prototype.slice.call(b.querySelectorAll("input[type=radio]"));
+      var flag = b.querySelector(".saved");
+      var timer;
+
+      if (saved.note && note) note.value = saved.note;
+      radios.forEach(function (r) { if (r.value === saved.choice) r.checked = true; });
+
+      function mark() {
+        if (!flag) return;
+        flag.hidden = false;
+        clearTimeout(timer);
+        timer = setTimeout(function () { flag.hidden = true; }, 1400);
+      }
+
+      radios.forEach(function (r) {
+        r.addEventListener("change", function () {
+          store[qid] = Object.assign({}, store[qid], { choice: r.value, q: b.dataset.q });
+          save(); mark();
+        });
+      });
+
+      if (note) {
+        var t;
+        note.addEventListener("input", function () {
+          clearTimeout(t);
+          t = setTimeout(function () {
+            store[qid] = Object.assign({}, store[qid], { note: note.value, q: b.dataset.q });
+            save(); mark();
+          }, 400);
+        });
+      }
+    });
+
+    function summary() {
+      var lines = ["푸룻해유 홈페이지 — 확인 요청 답변", ""];
+      blocks.forEach(function (b, i) {
+        var a = store[b.dataset.qid];
+        if (!a || (!a.choice && !(a.note || "").trim())) return;
+        var n = ("0" + (i + 1)).slice(-2);
+        lines.push(n + ". " + b.dataset.q);
+        if (a.choice) lines.push("   → " + a.choice);
+        if ((a.note || "").trim()) lines.push("   메모: " + a.note.trim());
+        lines.push("");
+      });
+      var any = lines.length > 2;
+      var screenLines = [];
+      shots.forEach(function (shot) {
+        var a = store["page:" + shot.dataset.page];
+        if (!a || (!a.choice && !(a.note || "").trim())) return;
+        screenLines.push("· " + shot.dataset.label + (a.choice ? " — " + a.choice : ""));
+        if ((a.note || "").trim()) screenLines.push("   " + a.note.trim());
+      });
+      if (screenLines.length) {
+        lines.push("[화면별 의견]");
+        lines = lines.concat(screenLines, [""]);
+        any = true;
+      }
+      var extra = (store.extra && store.extra.note || "").trim();
+      if (extra) {
+        lines.push("[기타 주요 의견]", extra, "");
+        any = true;
+      }
+      if (!any) lines.push("(아직 적으신 답변이 없습니다)");
+      return lines.join("\n");
+    }
+
+    var copyBtn = document.getElementById("copy");
+    copyBtn.addEventListener("click", function () {
+      var text = summary();
+      function done() { copyBtn.textContent = "복사됨"; setTimeout(function () { copyBtn.textContent = "답변 복사"; }, 1600); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) { window.prompt("아래 내용을 복사해 주세요", text); }
+        document.body.removeChild(ta);
+      }
+    });
+
+    document.getElementById("reset").addEventListener("click", function () {
+      if (!window.confirm("적으신 답변을 모두 지울까요?")) return;
+      store = {};
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      if (extraNote) extraNote.value = "";
+      blocks.concat(shots).forEach(function (b) {
+        var note = b.querySelector("textarea");
+        if (note) note.value = "";
+        Array.prototype.forEach.call(b.querySelectorAll("input[type=radio]"), function (r) { r.checked = false; });
+      });
+      progress();
+    });
+
+
+    /* 기타 의견 — 질문·화면과 같은 저장소를 쓴다 */
+    var extraNote = document.getElementById("extra-note");
+    var extraSaved = document.getElementById("extra-saved");
+    if (extraNote) {
+      if (store.extra && store.extra.note) extraNote.value = store.extra.note;
+      var extraTimer, extraFlag;
+      extraNote.addEventListener("input", function () {
+        clearTimeout(extraTimer);
+        extraTimer = setTimeout(function () {
+          store.extra = { note: extraNote.value };
+          save();
+          if (extraSaved) {
+            extraSaved.hidden = false;
+            clearTimeout(extraFlag);
+            extraFlag = setTimeout(function () { extraSaved.hidden = true; }, 1400);
+          }
+        }, 400);
+      });
+    }
+
+    /* 화면 크게 보기 — 아티팩트 안에서는 새 탭이 막혀서 페이지 안에서 연다 */
+    var viewer = document.getElementById("viewer");
+    var viewerImg = document.getElementById("viewer-img");
+    var viewerTitle = document.getElementById("viewer-title");
+    var viewerBody = document.getElementById("viewer-body");
+    var lastOpener = null;
+
+    function openViewer(src, title, opener) {
+      viewerImg.src = src;
+      viewerImg.alt = title;
+      viewerTitle.textContent = title;
+      viewer.hidden = false;
+      document.body.classList.add("locked");
+      viewerBody.scrollTop = 0;
+      lastOpener = opener || null;
+      document.getElementById("viewer-close").focus();
+    }
+    function closeViewer() {
+      viewer.hidden = true;
+      document.body.classList.remove("locked");
+      if (lastOpener) lastOpener.focus();
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll("button.shot-link"), function (btn) {
+      btn.addEventListener("click", function () {
+        openViewer(btn.dataset.src, btn.dataset.title, btn);
+      });
+    });
+    document.getElementById("viewer-close").addEventListener("click", closeViewer);
+    viewer.addEventListener("click", function (e) {
+      if (e.target === viewer || e.target === viewerBody) closeViewer();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !viewer.hidden) closeViewer();
+    });
+
+    progress();
+  })();
+</script>
+
+<footer class="wrap">
+  푸룻해유 홈페이지 작업 · 확인 요청 목록 · 2026-09-28
+</footer>
